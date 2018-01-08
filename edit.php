@@ -10,8 +10,8 @@
 <td><input type="text" name="username" value="<?php echo $_GET['username']; ?>" /></td>
 </tr>
 <tr>
-<td>password:</td>
-<td><input type="text" name="password" value="<?php echo $_GET['password']; ?>"/></td>
+<td>hash:</td>
+<td><input type="text" name="hash" value="<?php echo $_GET['hash']; ?>"/></td>
 </tr>
 <tr>
 <td>fullname:</td>

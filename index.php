@@ -11,12 +11,45 @@ if(isset($_POST["insert"])){
 		$phonenum=$_POST["phonenum"];
 		$email=$_POST["email"];
 		$address=$_POST["address"];	
-		$query=$employeecon->prepare("insert into employee(username, password, full_Name, phone_Number, email, address) values('$username', '$password', '$fullname', '$phonenum', '$email', '$address');");
+		$error=0;
+		
+			if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['email']) && !empty($_POST['phonenum']) && !empty($_POST['address'])){
+	
+//Check if username is made up of only alphanumberic characters
+if(!ctype_alnum($username))
+{
+  echo "Username is not a valid string. Please enter only alphanumberic characters.";
+ echo "<br />\n";
+  $error=1;
+}
+
+//Check phone number
+if(!preg_match("/^(3|6|8|9)\d{7}$/", $phonenum)) 
+		{
+		    echo "Phone numbers must be 8 numbers and Start with 3 OR 6 OR 8 OR 9.";
+			echo "<br />\n";
+			$error=1;
+		}
+
+//Check password complexitiy
+if(!preg_match("/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/", $password)) 
+		{
+		   echo "Password invalid. Minimum 8 characters 1 number and 1 upper case.";
+		   echo "<br />\n";
+		   $error=1;
+		}
+if($error == 1){
+	goto Area1;
+}
+	$hash = password_hash($hash, PASSWORD_BCRYPT, ["cost" => 11]);
+	
+		$query=$employeecon->prepare("insert into employee(username, hash, full_Name, phone_Number, email, address) values('$username', '$hash', '$fullname', '$phonenum', '$email', '$address');");
 		if($query->execute())
 		{
 			echo "<center>Record Inserted!</center><br>";
 		}
 	}
+}
 }
 
 if(isset($_POST["update"])){
@@ -57,9 +90,10 @@ if(!preg_match("/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/", $password))
 if($error == 1){
 	goto Area1;
 }
-		
+	$hash = 0;
+	$hash = $password_hash($hash, PASSWORD_BCRYPT, ["cost" => 11]);
 	
-	$query=$employeecon->prepare("update employee set username='$username' , password='$password', full_Name='$fullname', phone_Number='$phonenum', email='$email', address='$address' where Employee_ID=".$_POST['id']);
+	$query=$employeecon->prepare("update employee set username='$username' , hash='$hash', full_Name='$fullname', phone_Number='$phonenum', email='$email', address='$address' where Employee_ID=".$_POST['id']);
 	if($query->execute())
 	{
 		echo "<center>Record Updated!</center><br>";
@@ -123,12 +157,12 @@ Area1:
 // Close connection
 $query=$employeecon->prepare("select * from employee");
 $query->execute();
-$query->bind_result($id, $username,$password, $fullname, $phonenum, $email, $address);
+$query->bind_result($id, $username, $hash, $fullname, $phonenum, $email, $address);
 echo "<table align='center' border='1'>";
 echo "<tr>";
 echo "<th>Id</th>";
 echo "<th>Employee Name</th>";
-echo "<th>Password</th>";
+echo "<th>Hash</th>";
 echo "<th>Fullname</th>";
 echo "<th>Phonenum</th>";
 echo "<th>Email</th>";
@@ -139,12 +173,12 @@ while($query->fetch())
 	echo "<tr>";
 	echo "<td>".$id."</td>";
 	echo "<td>".$username."</td>";
-	echo "<td>".$password."</td>";
+	echo "<td>".$hash."</td>";
 	echo "<td>".$fullname."</td>";
 	echo "<td>".$phonenum."</td>";
 	echo "<td>".$email."</td>";
 	echo "<td>".$address."</td>";
-	echo "<td><a href='edit.php?operation=edit&id=".$id."&username=".$username."&password=".$password."&fullname=".$fullname."&phonenum=".$phonenum."&email=".$email."&address=".$address."'>edit</a></td>";
+	echo "<td><a href='edit.php?operation=edit&id=".$id."&username=".$username."&hash=".$hash."&fullname=".$fullname."&phonenum=".$phonenum."&email=".$email."&address=".$address."'>edit</a></td>";
 	echo "<td><a href='index.php?operation=delete&id=".$id."'>delete</a></td>";
 	echo "</tr>";	
 	
