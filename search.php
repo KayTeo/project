@@ -43,7 +43,6 @@ else{
 }
 
 $query="SELECT * FROM `retail_items` INNER JOIN `retailers` ON retail_items.retails_ID=retailers.retails_ID WHERE item_Name LIKE '%$keyword%'";
-
 $result=$con->query($query);
 
 if($result->num_rows > 0){

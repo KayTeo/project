@@ -1,6 +1,7 @@
 <?php
 $employeecon=mysqli_connect("localhost","root","","employee");
 
+require_once("sessionverify.php");
 
 if(isset($_POST["insert"])){
 	if($_POST["insert"]=="yes")
@@ -11,9 +12,10 @@ if(isset($_POST["insert"])){
 		$phonenum=$_POST["phonenum"];
 		$email=$_POST["email"];
 		$address=$_POST["address"];	
+		$role=$_POST["role"];
 		$error=0;
 		
-			if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['email']) && !empty($_POST['phonenum']) && !empty($_POST['address'])){
+			if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['email']) && !empty($_POST['phonenum']) && !empty($_POST['address']) && !empty($_POST['password'])){
 	
 //Check if username is made up of only alphanumberic characters
 if(!ctype_alnum($username))
@@ -41,12 +43,14 @@ if(!preg_match("/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/", $password))
 if($error == 1){
 	goto Area1;
 }
+
 	$hash = password_hash($hash, PASSWORD_BCRYPT, ["cost" => 11]);
-	
-		$query=$employeecon->prepare("insert into employee(username, hash, full_Name, phone_Number, email, address) values('$username', '$hash', '$fullname', '$phonenum', '$email', '$address');");
+
+		$query=$employeecon->prepare("insert into employee(username, hash, full_Name, phone_Number, email, address, role) values('$username', '$hash', '$fullname', '$phonenum', '$email', '$address', '$role');");
 		if($query->execute())
 		{
 			echo "<center>Record Inserted!</center><br>";
+			echo $hash;
 		}
 	}
 }
@@ -61,6 +65,8 @@ if(isset($_POST["update"])){
 	$phonenum=$_POST["phonenum"];
 	$email=$_POST["email"];
 	$address=$_POST["address"];
+	$role=$_POST["role"];
+	$error=0;
 	
 	if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['email']) && !empty($_POST['phonenum']) && !empty($_POST['address'])){
 	
@@ -90,10 +96,11 @@ if(!preg_match("/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/", $password))
 if($error == 1){
 	goto Area1;
 }
-	$hash = 0;
-	$hash = $password_hash($hash, PASSWORD_BCRYPT, ["cost" => 11]);
 	
-	$query=$employeecon->prepare("update employee set username='$username' , hash='$hash', full_Name='$fullname', phone_Number='$phonenum', email='$email', address='$address' where Employee_ID=".$_POST['id']);
+	$hash = 0;
+	$hash = password_hash($password, PASSWORD_BCRYPT, ["cost" => 11]);
+	
+	$query=$employeecon->prepare("update employee set username='$username' , hash='$hash', full_Name='$fullname', phone_Number='$phonenum', email='$email', address='$address', role='$role' where Employee_ID=".$_POST['id']);
 	if($query->execute())
 	{
 		echo "<center>Record Updated!</center><br>";
@@ -143,6 +150,10 @@ if(isset($_GET['operation'])){
 <td><input type="text" name="address" /></td>
 </tr>
 <tr>
+<td>role:</td>
+<td><input type="text" name="role"/></td>
+</tr>
+<tr>
 <td>&nbsp;</td>
 <td align="right">
 <input type="hidden" name="insert" value="yes" />
@@ -155,18 +166,19 @@ if(isset($_GET['operation'])){
 <?php
 Area1:
 // Close connection
-$query=$employeecon->prepare("select * from employee");
+$query=$employeecon->prepare("select employee_ID, username, hash, full_Name, phone_Number, email, address, role from employee");
 $query->execute();
-$query->bind_result($id, $username, $hash, $fullname, $phonenum, $email, $address);
+$query->bind_result($id, $username, $hash, $fullname, $phonenum, $email, $address, $role);
 echo "<table align='center' border='1'>";
 echo "<tr>";
 echo "<th>Id</th>";
-echo "<th>Employee Name</th>";
+echo "<th>Username</th>";
 echo "<th>Hash</th>";
 echo "<th>Fullname</th>";
 echo "<th>Phonenum</th>";
 echo "<th>Email</th>";
 echo "<th>Address</th>";
+echo "<th>Role</th>";
 echo "</tr>";
 while($query->fetch())
 {
@@ -178,7 +190,8 @@ while($query->fetch())
 	echo "<td>".$phonenum."</td>";
 	echo "<td>".$email."</td>";
 	echo "<td>".$address."</td>";
-	echo "<td><a href='edit.php?operation=edit&id=".$id."&username=".$username."&hash=".$hash."&fullname=".$fullname."&phonenum=".$phonenum."&email=".$email."&address=".$address."'>edit</a></td>";
+	echo "<td>".$role."</td>";
+	echo "<td><a href='edit.php?operation=edit&id=".$id."&username=".$username."&hash=".$hash."&fullname=".$fullname."&phonenum=".$phonenum."&email=".$email."&address=".$address."&role=".$role."'>edit</a></td>";
 	echo "<td><a href='index.php?operation=delete&id=".$id."'>delete</a></td>";
 	echo "</tr>";	
 	

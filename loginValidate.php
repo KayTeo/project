@@ -62,8 +62,22 @@ else // User exists
 		
 		$mysqli->query("UPDATE employee SET captcha='$capid' WHERE username='$username'");
 		
+		//Generate OTP and send to user email
+#		require_once("mail_function.php");
+		
+		
+#		$otpid=mt_rand(1000000, 9999999);
+#		$_SESSION['otpid']=$otpid;
+#		$to = $user['email'];
+#		$subject = "E-Commerce OTP";
+#		$message = 'Your OTP for E-Commerce website login user ' . $username . ' is ' . $otpid;
+#		$headers = 'From: keith_teo@outlook.sg';
+
+		echo "Email sent successfully";
+		
 		header("location: profile.php");
-	} 	
+
+	}
 	else
 	{
 		$_SESSION['message'] = "You have entered wrong password, try again";

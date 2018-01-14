@@ -6,12 +6,16 @@
 <td> <?php echo $_GET['id']; ?> </td>
 </tr>
 <tr>
+<td>Hash:</td>
+<td> <?php echo $_GET['hash']; ?> </td>
+</tr>
+<tr>
 <td>username:</td>
 <td><input type="text" name="username" value="<?php echo $_GET['username']; ?>" /></td>
 </tr>
 <tr>
-<td>hash:</td>
-<td><input type="text" name="hash" value="<?php echo $_GET['hash']; ?>"/></td>
+<td>Password:</td>
+<td><input type="text" name="password"/></td>
 </tr>
 <tr>
 <td>fullname:</td>
@@ -30,8 +34,12 @@
 <td><input type="text" name="address" value="<?php echo $_GET['address']; ?>"/></td>
 </tr>
 <tr>
+<td>role:</td>
+<td><input type="text" name="role" value="<?php echo $_GET['role']; ?>"/></td>
+</tr>
+<tr>
 <td>&nbsp;</td>
-<td align="right">
+<td align="left">
 <input type="hidden" name="id" value="<?php echo $_GET['id'] ?>" />
 <input type="hidden" name="update" value="yes" />
 <input type="submit" value="update Record"/>
